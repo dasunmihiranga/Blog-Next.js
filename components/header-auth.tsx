@@ -12,6 +12,12 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data, error } = await supabase
+    .from('users') // your custom table for users
+    .select('*')
+    .eq('email', user?.email)
+    .single(); 
+
   if (!hasEnvVars) {
     return (
       <>
@@ -50,8 +56,11 @@ export default async function AuthButton() {
   }
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      Hey, {data.first_name}!
       <form action={signOutAction}>
+      <Button type="submit" variant={"outline"}> 
+      <Link href={"/blog-page"}>View My Blogs </Link>
+      </Button>
         <Button type="submit" variant={"outline"}>
           Sign out
         </Button>
@@ -59,6 +68,7 @@ export default async function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
+     
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/sign-in">Sign in</Link>
       </Button>
